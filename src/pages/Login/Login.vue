@@ -4,32 +4,40 @@
       <div class="login_header">
         <h2 class="login_logo">美食城外卖</h2>
         <div class="login_header_title">
-          <a href="javascript:;" class="on">短信登录</a>
-          <a href="javascript:;">密码登录</a>
+          <a href="javascript:;" :class="{on: !loginWay}" @click="loginWay=false">短信登录</a>
+          <a href="javascript:;" :class="{on: loginWay}" @click="loginWay=true">密码登录</a>
         </div>
       </div>
       <div class="login_content">
         <form>
-          <div class="on">
+          <div :class="{on: !loginWay}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号">
-              <button disabled="disabled" class="get_verification">获取验证码</button>
+              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
+              <button
+                :disabled="!rightPhone"
+                class="get_verification"
+                :class="{right_phone:rightPhone}"
+                @click.prevent="getCode()"
+              >{{computeTime>0 ?'已发送'+computeTime+'s':"获取验证码"}}</button>
             </section>
             <section class="login_verification">
               <input type="tel" maxlength="8" placeholder="验证码">
             </section>
             <section class="login_hint">
-              温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
+              温馨提示：未注册美食城外卖帐号的手机号，登录时将自动注册，且代表已同意
               <a href="javascript:;">《用户服务协议》</a>
             </section>
           </div>
-          <div>
+          <div :class="{on: loginWay}">
             <section>
               <section class="login_message">
                 <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="密码">
+
+                <input type="text" maxlength="8" placeholder="密码" v-if="showPwd" v-model="pwd">
+                <input type="password" maxlength="8" placeholder="密码">
+
                 <div class="switch_button off">
                   <div class="switch_circle"></div>
                   <span class="switch_text">...</span>
@@ -55,10 +63,41 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      loginWay: true, //true 代表短信登陆，false代表密码
+      phone: "", //手机号
+      computeTime: 0, //计时的时间
+      showPwd:false,//是否显示密码
+      pwd:"",//密码
+    };
   },
-  components: {}
-};
+  components: {},
+  computed: {
+    rightPhone() {
+      return /^[1][3,4,5,7,8][0-9]{9}$/.test(this.phone);
+    }
+  },
+  methods:{
+    getCode(){
+        // 如果当前没有计时
+        // 启动计时
+        // 这个方法犯的这个错误，花了2个小时，记住： 计时器的回调函数里的this是window  所以用vue实例的computeTime ，用vue实列调用，把this 赋值给that
+        var that=this
+        if(this.computeTime===0){
+          this.computeTime=30
+          var timer= setInterval(function(){
+            // console.log(this)
+            that.computeTime--
+            // console.log(that.computeTime)
+            // 如果到时，停止计时
+            if(that.computeTime===0){
+              clearInterval(timer)
+            }
+          },1000)
+        }
+    }
+  }
+}
 </script>
 
 <style  lang='stylus' rel='stylesheet/stylus'>
@@ -122,6 +161,8 @@ export default {
               color: #ccc
               font-size: 14px
               background: transparent
+              &.right_phone
+                color: black
           .login_verification
             position: relative
             margin-top: 16px

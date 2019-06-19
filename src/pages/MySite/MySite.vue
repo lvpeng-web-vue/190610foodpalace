@@ -2,7 +2,7 @@
   <section class="msite">
     <!--首页头部-->
 
-    <HeaderTop title="昌平区北七家宏福科技园(337省道北)">
+    <HeaderTop :title="address.name">
       <span class="header_search" slot="left">
         <i class="iconfont icon-sousuo"></i>
       </span>
@@ -15,109 +15,24 @@
     <nav class="msite_nav">
       <div class="swiper-container">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
+          <div class="swiper-slide" v-for="(cs,index) in categorysArr" :key="index">
+            <a href="javascript:" class="link_to_food" v-for="(c,index2) in cs" :key="index2">
+              <div class="food_container" >
+               <img :src="imgBaseUrl+c.image_url">
               </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/3.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/4.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/5.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/6.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/7.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/8.jpg">
-              </div>
-              <span>土豪推荐</span>
-            </a>
-          </div>
-          <div class="swiper-slide">
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/9.jpg">
-              </div>
-              <span>甜品饮品</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/10.jpg">
-              </div>
-              <span>商超便利</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/11.jpg">
-              </div>
-              <span>美食</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/12.jpg">
-              </div>
-              <span>简餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/13.jpg">
-              </div>
-              <span>新店特惠</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/14.jpg">
-              </div>
-              <span>准时达</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/1.jpg">
-              </div>
-              <span>预订早餐</span>
-            </a>
-            <a href="javascript:" class="link_to_food">
-              <div class="food_container">
-                <img src="./images/nav/2.jpg">
-              </div>
-              <span>土豪推荐</span>
+              <span>{{c.title}}</span>
             </a>
           </div>
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
+     
+     
+     
+     
+     
+     
+     
       </div>
     </nav>
     <!--首页附近商家-->
@@ -136,16 +51,51 @@ import HeaderTop from "../../components/HeaderTop/HeaderTop";
 import Swiper from 'swiper'
 import "swiper/dist/css/swiper.min.css"
 import ShopList from "../../components/ShopList/ShopList"
+import {mapState} from "vuex"
 export default {
   data() {
-    return {};
+    return {
+      imgBaseUrl: 'https://fuss10.elemecdn.com'
+    }
   },
   components: {
     HeaderTop,
     ShopList
   },
-  mounted(){
-      // 页面有数据之后，创建一个Swiper对象，实现轮播/滑动
+  computed:{
+    // 读取state的地址信息
+    // 通过扩展运算符，将store里的state/actions/mutations/getters的属性或者方法直接映射到当前vue对象的this上，使用时直接this。xxx
+   // 使用前需要先引入
+    ...mapState(["address","categorys"]),
+
+    // 根据categorys一维数组 生成一个2维数组
+    // 小数组种的元素个数最大是8个
+    categorysArr(){
+      const max = 8
+      const arr = []
+      const categorys=this.categorys
+      let smallArr = []
+      categorys.forEach((c, index) => {
+      if(smallArr.length===0) {
+      arr.push(smallArr)
+      }
+      smallArr.push(c)
+      if(smallArr.length===max) {
+      smallArr = []
+      }
+      })
+      return arr
+      }
+
+  },
+  watch:{
+    // categorys 数组种有数据了，在异步更新界面之前执行
+
+    categorys(value){
+     
+      // 界面更新就立即创建swiper对象
+      this.$nextTick(function(){
+           // 页面有数据之后，创建一个Swiper对象，实现轮播/滑动 创建时机关键
       new Swiper('.swiper-container',{
         // 循环轮播，无缝滑屏
         loop:true,
@@ -154,8 +104,15 @@ export default {
           el:'.swiper-pagination'
         }
       })
+      })
+  }
   },
-};
+  mounted(){
+      this.$store.dispatch("getCategorys")
+      this.$store.dispatch("getShops")
+    
+}
+}
 </script>
 
 <style  lang='stylus' rel='stylesheet/stylus'>
@@ -212,5 +169,4 @@ export default {
         color: #999
         font-size: 14px
         line-height: 20px
-    
 </style>
