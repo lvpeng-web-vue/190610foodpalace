@@ -3,6 +3,9 @@ import Vue from 'vue'
 import router from './router'
 import App from './App.vue'
 import store from "./store/index"
+import {Button} from 'mint-ui'
+// 注册全局组件标签
+Vue.component(Button.name,Button) //<mt-button>这个标签可以全局使用
 new Vue({
     el:"#app",
     render:h=>h(App),
