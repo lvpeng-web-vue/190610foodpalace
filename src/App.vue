@@ -15,6 +15,7 @@ import FooterGuide from './components/FooterGuide/FooterGuide'
   mounted(){
     // 异步请求地址，请求到的数据存储在mapState 
     this.$store.dispatch("getAddress")
+    this.$store.dispatch("getUserInfo")
     // this.getAddress()
   },
   // methods:{
