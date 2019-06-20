@@ -44,7 +44,7 @@
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <img class="get_verification" src="http://localhost:3000/captcha" alt="captcha" @click="getCaptcha">
               </section>
             </section>
           </div>
@@ -107,6 +107,7 @@ export default {
         }, 1000);
       }
     },
+    // 是否显示警告框，警告框的内容显示
     alertShow(alertText){
       this.showAlert=true
       this.alertText=alertText
@@ -140,9 +141,14 @@ export default {
         }
       }
     },
+    // 关闭警告框
     closeTip(){
       this.showAlert=false
       this.alertText=""
+    },
+    getCaptcha(event){
+      // 每次指定的src 值不一样。 跨域是ajax请求， 当前不存在跨域问题
+      event.target.src="http://localhost:3000/captcha?time="+Date.now()
     }
   }
 };
