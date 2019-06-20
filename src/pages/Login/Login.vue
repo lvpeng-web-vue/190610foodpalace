@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="login_content">
-        <form>
+        <form @submit.prevent="login">
           <div :class="{on: !loginWay}">
             <section class="login_message">
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
@@ -21,7 +21,7 @@
               >{{computeTime>0 ?'已发送'+computeTime+'s':"获取验证码"}}</button>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input type="tel" maxlength="8" placeholder="验证码" v-model="code">
             </section>
             <section class="login_hint">
               温馨提示：未注册美食城外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -31,12 +31,11 @@
           <div :class="{on: loginWay}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                <input type="text" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
               </section>
               <section class="login_verification">
-
                 <input type="text" maxlength="8" placeholder="密码" v-if="showPwd" v-model="pwd">
-                <input type="password" maxlength="8" placeholder="密码">
+                <input type="password" maxlength="8" placeholder="密码" v-model="pwd">
 
                 <div class="switch_button off">
                   <div class="switch_circle"></div>
@@ -44,7 +43,7 @@
                 </div>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码">
+                <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
                 <img class="get_verification" src="./images/captcha.svg" alt="captcha">
               </section>
             </section>
@@ -57,47 +56,95 @@
         <i class="iconfont icon-jiantou2"></i>
       </a>
     </div>
+
+    <AlertTip :alertText="alertText" v-show="showAlert" @closeTip="closeTip"/>
   </section>
 </template>
 
 <script>
+import AlertTip from "../../components/AlertTip/AlertTip";
 export default {
   data() {
     return {
       loginWay: true, //true 代表短信登陆，false代表密码
       phone: "", //手机号
       computeTime: 0, //计时的时间
-      showPwd:false,//是否显示密码
-      pwd:"",//密码
+      showPwd: false, //是否显示密码
+      pwd: "", //密码
+      code: "", //短信验证码
+      name: "", //用户名
+      captcha: "", //图形验证码
+      alertText: "", //提示文本
+      showAlert: false //是否显示提示框
     };
   },
-  components: {},
+  components: {
+    AlertTip
+  },
   computed: {
     rightPhone() {
       return /^[1][3,4,5,7,8][0-9]{9}$/.test(this.phone);
     }
   },
-  methods:{
-    getCode(){
-        // 如果当前没有计时
-        // 启动计时
-        // 这个方法犯的这个错误，花了2个小时，记住： 计时器的回调函数里的this是window  所以用vue实例的computeTime ，用vue实列调用，把this 赋值给that
-        var that=this
-        if(this.computeTime===0){
-          this.computeTime=30
-          var timer= setInterval(function(){
-            // console.log(this)
-            that.computeTime--
-            // console.log(that.computeTime)
-            // 如果到时，停止计时
-            if(that.computeTime===0){
-              clearInterval(timer)
-            }
-          },1000)
+  methods: {
+    // 异步获取短信验证码
+    getCode() {
+      // 如果当前没有计时
+      // 启动计时
+      // 这个方法犯的这个错误，花了2个小时，记住： 计时器的回调函数里的this是window  所以用vue实例的computeTime ，用vue实列调用，把this 赋值给that
+      var that = this;
+      if (this.computeTime === 0) {
+        this.computeTime = 30;
+        var timer = setInterval(function() {
+          // console.log(this)
+          that.computeTime--;
+          // console.log(that.computeTime)
+          // 如果到时，停止计时
+          if (that.computeTime === 0) {
+            clearInterval(timer);
+          }
+        }, 1000);
+      }
+    },
+    alertShow(alertText){
+      this.showAlert=true
+      this.alertText=alertText
+    },
+    // 异步登陆
+    login() {
+      // 前台表单验证
+      // 如果是短信登陆
+      if (!this.loginWay) {
+        const { rightPhone, phone, code } = this;
+
+        if (!rightPhone) {
+          // 手机号不正确
+          this.alertShow("手机号不正确")
+        } else if (!/^\d{6}$/.test(code)) {
+          // 验证码必须为6位数字
+          this.alertShow("验证码必须为6位数字")
         }
+      } else {
+        //密码登陆
+        const { name, pwd, captcha } = this;
+        if (!name) {
+          // 用户名不能为空
+          this.alertShow("用户名不能为空")
+        } else if (!pwd) {
+          // 密码不能为空
+          this.alertShow("密码不能为空")
+        } else if (!captcha) {
+          // 验证码不能为空
+          this.alertShow("验证码不能为空")
+        }
+      }
+    },
+    closeTip(){
+      this.showAlert=false
+      this.alertText=""
     }
   }
-}
+};
 </script>
 
 <style  lang='stylus' rel='stylesheet/stylus'>
