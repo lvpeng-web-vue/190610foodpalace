@@ -35,11 +35,11 @@
               </section>
               <section class="login_verification">
                 <input type="text" maxlength="8" placeholder="密码" v-if="showPwd" v-model="pwd">
-                <input type="password" maxlength="8" placeholder="密码" v-model="pwd">
+                <input type="password" maxlength="8" placeholder="密码" v-model="pwd" v-else>
 
-                <div class="switch_button off">
-                  <div class="switch_circle"></div>
-                  <span class="switch_text">...</span>
+                <div class="switch_button " @click="showPwd=!showPwd" :class="showPwd?'on':'off'">
+                  <div class="switch_circle" :class="{'right':showPwd}"></div>
+                  <span class="switch_text">{{showPwd?'abc':'...'}}</span>
                 </div>
               </section>
               <section class="login_message">
@@ -75,7 +75,8 @@ export default {
       name: "", //用户名
       captcha: "", //图形验证码
       alertText: "", //提示文本
-      showAlert: false //是否显示提示框
+      showAlert: false ,//是否显示提示框
+     
     };
   },
   components: {
@@ -249,6 +250,8 @@ export default {
                 background: #fff
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1)
                 transition: transform 0.3s
+                &.right
+                  transform translateX(30px)
           .login_hint
             margin-top: 12px
             color: #999
