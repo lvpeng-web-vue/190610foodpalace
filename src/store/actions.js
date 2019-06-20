@@ -1,6 +1,6 @@
 // 通过mutations间接更新state的多个方法的对象
 import { reqAddress, reqCategorys, reqShops } from '../api/index'
-import { RECEIVE_ADDRESS, RECEIVE_CATEGORYS, RECEIVE_SHOPS } from './mutation-types'
+import { RECEIVE_ADDRESS, RECEIVE_CATEGORYS, RECEIVE_SHOPS,RECEIVE_USER_INFO } from './mutation-types'
 export default {
     // 异步获取地址
     async getAddress({ commit, state }) {
@@ -18,5 +18,9 @@ export default {
         const { latitude, longitude } = state
         const result = await reqShops({ latitude, longitude })
         commit(RECEIVE_SHOPS, { shops: result.data })
+    },
+    // 先从前端发送请求获取,同步记录用户信息
+    recordUser({commit},userInfo){
+        commit(RECEIVE_USER_INFO,{userInfo})
     }
 }

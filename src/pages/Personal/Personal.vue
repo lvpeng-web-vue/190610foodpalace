@@ -8,7 +8,7 @@
               <i class="iconfont icon-person"></i>
             </div>
             <div class="user-info">
-              <p class="user-info-top">登录/注册</p>
+              <p class="user-info-top">{{userInfo._id ||'登录/注册'}}</p>
               <p>
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
@@ -63,13 +63,13 @@
               </span>
             </div>
           </a>
-          <!-- 硅谷外卖会员卡 -->
+          <!-- 美食城外卖会员卡 -->
           <a href="javascript:" class="my_order">
             <span>
               <i class="iconfont icon-vip"></i>
             </span>
             <div class="my_order_div">
-              <span>硅谷外卖会员卡</span>
+              <span>美食城外卖会员卡</span>
               <span class="my_order_icon">
                 <i class="iconfont icon-jiantou1"></i>
               </span>
@@ -96,12 +96,16 @@
 
 <script>
 import HeaderTop from "../../components/HeaderTop/HeaderTop"
+import {mapState} from "vuex"
 export default {
   data() {
     return {};
   },
   components: {
     HeaderTop
+  },
+  computed:{
+    ...mapState(['userInfo'])
   }
 };
 </script>
