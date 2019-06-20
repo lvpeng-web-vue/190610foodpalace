@@ -97,13 +97,13 @@ export default {
       var that = this;
       if (this.computeTime === 0) {
         this.computeTime = 30;
-        var timer = setInterval(function() {
+         this.intervalId = setInterval(function() {
           // console.log(this)
           that.computeTime--;
           // console.log(that.computeTime)
           // 如果到时，停止计时
           if (that.computeTime === 0) {
-            clearInterval(timer);
+            clearInterval(that.intervalId);
           }
         }, 1000);
         // 发送ajax请求，(向指定手机发送验证码)
@@ -114,7 +114,7 @@ export default {
           // 停止计时
           if(this.computeTime){
             this.computeTime=0
-            clearInterval(timer)
+            clearInterval(this.intervalId)
             
           }
         }
@@ -126,7 +126,8 @@ export default {
       this.alertText=alertText
     },
     // 异步登陆
-    login() {
+    async login() {
+      let result
       // 前台表单验证
       // 如果是短信登陆
       if (!this.loginWay) {
@@ -135,24 +136,53 @@ export default {
         if (!rightPhone) {
           // 手机号不正确
           this.alertShow("手机号不正确")
+          return
         } else if (!/^\d{6}$/.test(code)) {
           // 验证码必须为6位数字
           this.alertShow("验证码必须为6位数字")
+          return 
         }
+        // 发送ajax请求短信登陆
+         result=await reqSmsLogin(phone,code)
+        
       } else {
         //密码登陆
         const { name, pwd, captcha } = this;
         if (!name) {
           // 用户名不能为空
           this.alertShow("用户名不能为空")
+          return 
         } else if (!pwd) {
           // 密码不能为空
           this.alertShow("密码不能为空")
+          return
         } else if (!captcha) {
           // 验证码不能为空
           this.alertShow("验证码不能为空")
+          return 
         }
+        // 发送ajax 密码登陆
+         result=await reqPwdLogin(name,pwd,captcha)
+       
       }
+
+      // 不论登陆成功，失败都是停止倒计时
+        // 停止计时
+          if(this.computeTime){
+            this.computeTime=0
+            clearInterval(this.intervalId)
+            
+          }
+        //不论登陆成功失败，根据结果数据处理
+       if(result.code===0){
+          const user=result.data
+          // 将user保存到vuex的state中
+          // 跳转去个人中心界面
+          this.$router.replace("/personal")
+        }else{
+          const msg=result.msg
+          this.alertShow(msg)
+        }
     },
     // 关闭警告框
     closeTip(){
