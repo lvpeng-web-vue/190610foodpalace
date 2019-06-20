@@ -2,13 +2,20 @@
   <section class="msite">
     <!--首页头部-->
 
-    <HeaderTop :title="address.name">
-      <span class="header_search" slot="left">
-        <i class="iconfont icon-sousuo"></i>
-      </span>
-      <span class="header_login" slot="right">
-        <span class="header_login_text">登录|注册</span>
-      </span>
+    <HeaderTop :title="address.name" >
+      <router-link class="header_search" slot="left" to="/search">
+         <i class="iconfont icon-sousuo"></i>
+      </router-link >
+       
+      <router-link class="header_login" slot="right" to="userInfo._id?'/userInfo':'/login'">
+        <span class="header_login_text" v-if="!userInfo._id">登录|注册
+
+        </span>
+        <span class="header_login_text" v-else>
+            <i class="iconfont icon-person"></i>
+        </span>
+      </router-link>
+      
     </HeaderTop>
 
     <!--首页导航-->
@@ -26,12 +33,6 @@
         </div>
         <!-- Add Pagination -->
         <div class="swiper-pagination"></div>
-     
-     
-     
-     
-     
-     
      
       </div>
     </nav>
@@ -66,7 +67,7 @@ export default {
     // 读取state的地址信息
     // 通过扩展运算符，将store里的state/actions/mutations/getters的属性或者方法直接映射到当前vue对象的this上，使用时直接this。xxx
    // 使用前需要先引入
-    ...mapState(["address","categorys"]),
+    ...mapState(["address","categorys","userInfo"]),
 
     // 根据categorys一维数组 生成一个2维数组
     // 小数组种的元素个数最大是8个
