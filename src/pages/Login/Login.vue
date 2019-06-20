@@ -63,6 +63,7 @@
 
 <script>
 import AlertTip from "../../components/AlertTip/AlertTip";
+import {reqSendCode,reqSmsLogin,reqPwdLogin} from "../../api/index"
 export default {
   data() {
     return {
@@ -89,7 +90,7 @@ export default {
   },
   methods: {
     // 异步获取短信验证码
-    getCode() {
+    async getCode() {
       // 如果当前没有计时
       // 启动计时
       // 这个方法犯的这个错误，花了2个小时，记住： 计时器的回调函数里的this是window  所以用vue实例的computeTime ，用vue实列调用，把this 赋值给that
@@ -105,6 +106,18 @@ export default {
             clearInterval(timer);
           }
         }, 1000);
+        // 发送ajax请求，(向指定手机发送验证码)
+        const result =await reqSendCode(this.phone)
+        if(result.code===1){
+          // 显示提示 手机号或者验证码不正确
+          this.alertShow(result.msg)
+          // 停止计时
+          if(this.computeTime){
+            this.computeTime=0
+            clearInterval(timer)
+            
+          }
+        }
       }
     },
     // 是否显示警告框，警告框的内容显示
