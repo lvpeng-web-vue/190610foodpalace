@@ -5,6 +5,7 @@ import App from './App.vue'
 import store from "./store/index"
 import {Button} from 'mint-ui'
 import "./mock/mockServer"  //加载mockserver即可
+import './filters/index' // 加载自定义过滤器
 // 注册全局组件标签
 Vue.component(Button.name,Button) //<mt-button>这个标签可以全局使用
 new Vue({

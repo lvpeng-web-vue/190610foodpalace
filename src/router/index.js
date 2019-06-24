@@ -76,6 +76,11 @@ export default new VueRouter({
         {
             path: '/',
             redirect: '/mysite'
+        },
+        {
+            path:"/login",
+            component:Login,
+           
         }
     ]
 })
