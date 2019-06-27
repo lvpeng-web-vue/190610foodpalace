@@ -1,6 +1,6 @@
 // 通过mutations间接更新state的多个方法的对象
-import { reqAddress, reqCategorys, reqShops, reqUser, reqLogout, reqShopGoods, reqShopInfo, reqShopRatings, } from '../api/index'
-import { RECEIVE_ADDRESS, RECEIVE_CATEGORYS, RECEIVE_SHOPS, RECEIVE_USER_INFO, RESET_USER_INFO, RECEIVE_GOODS, RECEIVE_INFO, RECEIVE_RATINGS,INCREMENT_FOOD_COUNT,DECREMENT_FOOD_COUNT,CLEAR_CART } from './mutation-types'
+import { reqAddress, reqCategorys, reqShops, reqUser, reqLogout, reqShopGoods, reqShopInfo, reqShopRatings,reqSearchShop } from '../api/index'
+import { RECEIVE_ADDRESS, RECEIVE_CATEGORYS, RECEIVE_SHOPS, RECEIVE_USER_INFO, RESET_USER_INFO, RECEIVE_GOODS, RECEIVE_INFO, RECEIVE_RATINGS, INCREMENT_FOOD_COUNT, DECREMENT_FOOD_COUNT, CLEAR_CART,RECEIVE_SEARCH_SHOPS } from './mutation-types'
 export default {
     // 异步获取地址
     async getAddress({ commit, state }) {
@@ -80,7 +80,13 @@ export default {
         }
     },
     // 清空购物车
-clearCart ({commit}) {
-    commit(CLEAR_CART)
+    clearCart({ commit }) {
+        commit(CLEAR_CART)
+    },
+    //异步搜索商家列表
+    async searchShop({ commit, state }, keyword) {
+        const { latitude, longitude } = state
+        const result = await reqSearchShop(latitude + ',' + longitude, keyword)
+        commit(RECEIVE_SEARCH_SHOPS, { searchShops: result.data })
     }
 }

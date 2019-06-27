@@ -39,7 +39,8 @@ export const reqUser = () => ajax('/api/userinfo')
 */
 export const reqLogout = () => ajax('/api/logout')
 
-
+// 根据关键字搜索商铺
+export const reqSearchShop=(geohash,keyword)=>ajax('/api/search_shops',{geohash,keyword})
 
 /**
 * 获取商家信息
